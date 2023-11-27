@@ -9,8 +9,8 @@
   - Originální název filmu
   - Český název filmu
   - Slovenský název filmu
-  - Země původu -> FK(Země)
-  - Žánr -> FK(žánr)
+  - Země původu -> seznam FK(Země)
+  - Žánr -> seznam FK(žánr)
   - Režisér -> seznam FK(Osobnosti)
   - Herci -> seznam FK(Osobnosti)
   - Rok premiery
