@@ -11,8 +11,8 @@
   - Slovenský název filmu
   - Země původu -> FK(Země)
   - Žánr -> FK(žánr)
-  - Režisér -> FK(Osobnosti)
-  - Herci -> FK(Osobnosti)
+  - Režisér -> seznam FK(Osobnosti)
+  - Herci -> seznam FK(Osobnosti)
   - Rok premiery
   - Hodnocení -> FK(Hodnocení)
   - Komentáře -> FK(Hodnocení)
@@ -32,7 +32,7 @@
     - Příjmení
     - Rok narození
     - informace
-    - filmy, ve kterých hráli / režírovali
+
 
 
 ## Funkce (views + templates)
