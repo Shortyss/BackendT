@@ -11,8 +11,8 @@
   - Slovenský název filmu
   - Země původu -> FK(Země)
   - Žánr -> FK(žánr)
-  - Režisér -> FK(režiséři)
-  - Herci -> FK(Herci)
+  - Režisér -> FK(Osobnosti)
+  - Herci -> FK(Osobnosti)
   - Rok premiery
   - Hodnocení -> FK(Hodnocení)
   - Komentáře -> FK(Hodnocení)
@@ -27,18 +27,12 @@
   - id filmu
   - obrázek (název souboru / image ?)
   - Popis
-- Herci
+- Osobnosti
     - Jméno
     - Příjmení
     - Rok narození
     - informace
-    - filmy, ve kterých hráli
-- Režiséři
-    - Jméno
-    - Příjmení
-    - Rok narození
-    - informace
-    - filmy, které řežírovali
+    - filmy, ve kterých hráli / režírovali
 
 
 ## Funkce (views + templates)
