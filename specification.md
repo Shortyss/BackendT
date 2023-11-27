@@ -14,6 +14,8 @@
   - Režisér -> seznam FK(Osobnosti)
   - Herci -> seznam FK(Osobnosti)
   - Rok premiery
+  - Datum vydání na DVD 
+  - Datum vydání na VOD
   - Hodnocení -> FK(Hodnocení)
   - Komentáře -> FK(Hodnocení)
   - obrázek -> FK(Obrázky)
@@ -32,7 +34,8 @@
     - Příjmení
     - Rok narození
     - informace
-
+- Merch Shop
+  - typ předmětů
 
 
 ## Funkce (views + templates)
@@ -44,6 +47,12 @@
         - podle hodnocení
         - podle herce
         - podle režiséra
+        - podle vydání na DVD
+        - podle vydání na VOD
+        - podle streamovací služby
+  
+        
+      
 - zobrazit detail filmu
 - Přihlášený uživatel může:
   - hodnotit filmy
@@ -51,3 +60,6 @@
 - Admin může:
   - přidat nový film/herce/režiséra/žánr/země/komentáře
   - Může smazat, nebo editovat film/herce/režiséra
+- E-shop
+  - filtrování podle filmu/ seriálu/ druhu zboží
+  
