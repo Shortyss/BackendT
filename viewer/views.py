@@ -13,5 +13,5 @@ def hello2(request, s):
 
 
 def hello3(request):
-    s = request.Get.get('s', '')
+    s = request.GET.get('s', '')
     return HttpResponse(f"Hello, {s} world!")
