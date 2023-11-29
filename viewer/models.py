@@ -1,12 +1,16 @@
 from django.db import models
-from django.db.models import Model, CharField, IntegerField, TextField, DateField, ForeignKey, DO_NOTHING
-
+from django.db.models import Model, CharField, IntegerField, TextField, DateField, ForeignKey, DO_NOTHING, \
+    ManyToManyField, SET_NULL
+from django.contrib.auth.models import User
 
 # Create your models here.
 
 
 class Country(Model):
     name = CharField(max_length=64, null=False, blank=False)
+
+    class Meta:
+        verbose_name_plural = "Countries"
 
 
 class Genre(Model):
@@ -28,27 +32,24 @@ class Movie(Model):
     title_orig = CharField(max_length=64, null=False, blank=False)
     title_cz = CharField(max_length=64)
     title_sk = CharField(max_length=64)
-    # TODO: countries
-    # TODO: genres
-    # TODO: directors
-    # TODO: actors
+    countries = ManyToManyField(Country, blank=True, related_name='movies_in_country')  # umožňuje jít oběma směry tabulek
+    genres = ManyToManyField(Genre, blank=True, related_name='movies_of_genre')
+    directors = ManyToManyField(Person, blank=False, related_name='directing_movie')
+    actors = ManyToManyField(Person, blank=True, related_name='acting_in_movie')
     year = IntegerField()
-    # TODO: ratings
-    # TODO: comments
-    # TODO: images
     video = CharField(max_length=128)
     description = TextField()   # TextField je dobrý pro dlouhé psaní
 
 
 class Rating(Model):
     movie = ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False)
-    # TODO: user
+    user = ForeignKey(User, null=True, on_delete=SET_NULL)
     rating = IntegerField(null=False, blank=False)
 
 
 class Comment(Model):
     movie = ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False)
-    # TODO: user
+    user = ForeignKey(User, null=True, on_delete=SET_NULL)
     comment = TextField(null=False, blank=False)
 
 
