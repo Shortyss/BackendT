@@ -24,7 +24,7 @@
 - Hodnocení
   - id filmu
   - id uživatele
-  - hodnocení
+  - hodnocení (hodnota 0 - 100%)
 - Obrázky
   - id filmu
   - obrázek (název souboru / image ?)
