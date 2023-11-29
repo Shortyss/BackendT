@@ -12,6 +12,8 @@ class Country(Model):
     class Meta:
         verbose_name_plural = "Countries"
 
+    def __str__(self):
+        return f"{self.name}"
 
 class Genre(Model):
     name = CharField(max_length=32, null=False, blank=False)  # CharField => VARCHAR
@@ -23,22 +25,30 @@ class Genre(Model):
 class Person(Model):
     first_name = CharField(max_length=32, null=False, blank=False)
     last_name = CharField(max_length=32, null=False, blank=False)
-    birth_date = DateField()
-    biography = TextField
+    birth_date = DateField(null=True, blank=True)
+    biography = TextField(null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+    class Meta:
+        ordering = ['last_name', 'first_name']
 
 
 class Movie(Model):
     title_orig = CharField(max_length=64, null=False, blank=False)
-    title_cz = CharField(max_length=64)
-    title_sk = CharField(max_length=64)
+    title_cz = CharField(max_length=64, null=True, blank=True)
+    title_sk = CharField(max_length=64, null=True, blank=True)
     countries = ManyToManyField(Country, blank=True, related_name='movies_in_country')  # umožňuje jít oběma směry tabulek
     genres = ManyToManyField(Genre, blank=True, related_name='movies_of_genre')
     directors = ManyToManyField(Person, blank=False, related_name='directing_movie')
     actors = ManyToManyField(Person, blank=True, related_name='acting_in_movie')
-    year = IntegerField()
-    video = CharField(max_length=128)
-    description = TextField()   # TextField je dobrý pro dlouhé psaní
+    year = IntegerField(null=True, blank=True)
+    video = CharField(max_length=128, null=True, blank=True)
+    description = TextField(null=True, blank=True)   # TextField je dobrý pro dlouhé psaní
+
+    def __str__(self):
+        return f"{self.title_orig}"
 
 
 class Rating(Model):
