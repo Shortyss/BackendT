@@ -1,9 +1,11 @@
 from django.db import models
-from django.db.models import Model
+from django.db.models import Model, CharField
 
 
 # Create your models here.
 
 
 class Genre(Model):
-    name = CharFiled(max_legth=128)
+    name = CharField(max_length=32)  # CharField => VARCHAR
+
+
