@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 from django.db.models import Model, CharField, IntegerField, TextField, DateField, ForeignKey, DO_NOTHING, \
     ManyToManyField, SET_NULL, DateTimeField
@@ -29,9 +31,25 @@ class Person(Model):
     last_name = CharField(max_length=32, null=False, blank=False)
     nationality = CharField(max_length=64, null=True, blank=True)
     birth_date = DateField(null=True, blank=True)
+    date_of_death = DateField(null=True, blank=True)
     biography = TextField(null=True, blank=True)
     created = DateTimeField(auto_now_add=True)
     updated = DateTimeField(auto_now=True)
+
+    def calculate_age(self, reference_date=None):
+        if reference_date is None:
+            reference_date = date.today()
+
+        if self.birth_date:
+            age = reference_date.year - self.birth_date.year - (
+                        (reference_date.month, reference_date.day) < (self.birth_date.month, self.birth_date.day))
+        else:
+            age = None
+
+        if not age or (self.date_of_death and self.date_of_death < reference_date):
+            return age
+        else:
+            return None
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
