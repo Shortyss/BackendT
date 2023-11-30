@@ -30,7 +30,11 @@ admin.site.register(Rating)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('hello', hello),
     path('hello2/<s>', hello2),
     path('hello3/', hello3),
+    path('hello4/', hello4),
+
+    path('movies/', movies, name='movies'),
 ]
