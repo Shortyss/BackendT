@@ -67,7 +67,6 @@ class Movie(Model):
 
         return title_name
 
-
     class Meta:
         ordering = ['title_orig']
 
