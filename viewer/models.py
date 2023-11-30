@@ -68,6 +68,10 @@ class Movie(Model):
         return title_name
 
 
+    class Meta:
+        ordering = ['title_orig']
+
+
 class Rating(Model):
     movie = ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False)
     user = ForeignKey(User, null=True, on_delete=SET_NULL)
