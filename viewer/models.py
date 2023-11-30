@@ -15,6 +15,7 @@ class Country(Model):
     def __str__(self):
         return f"{self.name}"
 
+
 class Genre(Model):
     name = CharField(max_length=32, null=False, blank=False)  # CharField => VARCHAR
 
@@ -48,13 +49,25 @@ class Movie(Model):
     description = TextField(null=True, blank=True)   # TextField je dobrý pro dlouhé psaní
 
     def __str__(self):
-        return f"{self.title_orig}"
+        if self.title_cz:
+            title_name = self.title_cz
+        elif self.title_sk:
+            title_name = self.title_sk
+        else:
+            title_name = self.title_orig
 
+        if self.year is not None:
+            title_name += f"({self.year})"
+
+        return title_name
 
 class Rating(Model):
     movie = ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False)
     user = ForeignKey(User, null=True, on_delete=SET_NULL)
     rating = IntegerField(null=False, blank=False)
+
+    def __str__(self):
+        return f"{self.user}: {self.rating}"
 
 
 class Comment(Model):
@@ -62,8 +75,14 @@ class Comment(Model):
     user = ForeignKey(User, null=True, on_delete=SET_NULL)
     comment = TextField(null=False, blank=False)
 
+    def __str__(self):
+        return f"{self.user}: {self.comment}"
+
 
 class Image(Model):
     movie = ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False)
     url = CharField(max_length=128, null=False, blank=False)
-    description = TextField
+    description = TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.movie}: {self.description}"
