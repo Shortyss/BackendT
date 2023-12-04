@@ -9,18 +9,18 @@
 </head>
 <body>
     <header class="headContainer">
-        <img class="headContainer-part" alt="Yoda1" src="./pic of movie/HD-wallpaper-jedi-yoda-star-wars-lightsbar-black-background-dark-theme.jpg">
+        <img class="headContainer-part" alt="Yoda1" src="{% static 'viewer/images/HD-wallpaper-jedi-yoda-star-wars-lightsbar-black-background-dark-theme.jpg' %}">
         <h1 class="headContainer-center">Endless Movie database</h1>
-        <img class="headContainer-part" alt="Yoda2" src="./pic of movie/wp7248743.webp">
+        <img class="headContainer-part" alt="Yoda2" src="{% static 'viewer/images/wp7248743.webp' %}">
     </header>
     <nav class="navContainer">
         <button>Register</button>
         <button>Login</button>
     </nav>
     <nav class="navContainer2">
-        <button>News in Cinemas</button>
-        <button>News on DVD</button>
-        <button>VOD Cinema Hub</button>
+        <a href="News.html"><button>News in Cinemas</button></a>
+        <a href="NewsOnDVD.html"><button>News on DVD</button></a>
+        <a href="{% url 'movies' %}"><button>Movies</button></a>
         <button>TV Recommendation</button>
         <button>Actor rankings</button>
         <button>Awards</button>
