@@ -10,7 +10,7 @@
 <body>
     <header class="headContainer">
         <img class="headContainer-part" alt="Yoda1" src="{% static 'viewer/images/HD-wallpaper-jedi-yoda-star-wars-lightsbar-black-background-dark-theme.jpg' %}">
-        <h1 class="headContainer-center">Endless Movie database</h1>
+        <a href="{% url 'index' %}"  class="headContainer-center"><h1>Endless Movie database</h1></a>
         <img class="headContainer-part" alt="Yoda2" src="{% static 'viewer/images/wp7248743.webp' %}">
     </header>
     <nav class="navContainer">
@@ -21,7 +21,7 @@
         <a href="News.html"><button>News in Cinemas</button></a>
         <a href="NewsOnDVD.html"><button>News on DVD</button></a>
         <a href="{% url 'movies' %}"><button>Movies</button></a>
-        <button>TV Recommendation</button>
+        <a href="{% url 'actors' %}"><button>Actors</button></a>
         <button>Actor rankings</button>
         <button>Awards</button>
         <button>Users</button>

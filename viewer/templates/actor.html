@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{actor}}</h1>
+<div class="person-details">
+    <div class="person-first-name">Jméno: {{ actor.first_name }}</div>
+    <div class="person-last-name">Příjmení: {{ actor.last_name }}</div>
+    <div class="person-birth-date">Datum narození: {{ actor.birth_date }} (věk: {{actor.calculate_age}})</div>
+    <div class="person-acting-in-movies">Herec:
+        {% for movie in actor.acting_in_movie.all %}
+            <span class="person-acting-in-movie"><a href="{% url 'movie' movie.id %}">{{ movie }}</a></span>
+        {% empty %}
+            Nehrál v žádném filmu
+        {% endfor %}
+    </div>
+    <div class="person-directing-movies">Režisér:
+        {% for movie in actor.directing_movie.all %}
+            <span class="person-directing-movie"><a href="{% url 'movie' movie.id %}">{{ movie }}</a></span>
+        {% empty %}
+            Nerežíroval žádný film
+        {% endfor %}
+    </div>
+    <div class="person-biography">Biografie: {{ actor.biography }}</div>
+</div>
+{% endblock %}

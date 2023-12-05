@@ -14,7 +14,6 @@ body, html {
     justify-content: space-between;
     align-items: center;
     background: black;
-    color: greenyellow;
     font-size: 3em;
     font-style: italic;
     font-family: serif;
@@ -25,6 +24,7 @@ body, html {
 }
 
 .headContainer-center {
+    color: greenyellow;
     width: 60%;
     text-align: center;
     margin: 0;
@@ -195,4 +195,18 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+p {
+    padding: 0px 50px;
+}
+
+.News {
+    height: 300px;
+    width: auto;
+}
+
+.News:hover {
+    transform: scale(1.3);
+    transition linear .7s;
 }

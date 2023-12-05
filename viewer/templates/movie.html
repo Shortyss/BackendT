@@ -8,7 +8,7 @@
     <div class="movie-title-sk">Slovenský název: {{ movie.title_sk }}</div>
     <div class="movie-countries">Země:
         {% for country in movie.countries.all %}
-            {{country}}
+            <span class="movie-country"><a href="{% url 'country' country.id %}">{{ country }}</a></span>
         {% endfor %}
     </div>
     <div class="movie-genres">žánry:
@@ -18,12 +18,14 @@
     </div>
     <div class="movie-directors">Režisér:
         {% for director in movie.directors.all %}
-            {{ director }}
+            <span class="movie-director"><a href="{% url 'actor' director.id %}">{{ director }}</a></span>
         {% endfor %}
     </div>
     <div class="movie-actors">Herci:
         {% for actor in movie.actors.all %}
-            {{ actor }}
+            <span class="movie-actor"><a href="{% url 'actor' actor.id %}">{{ actor }}</a></span>
+        {% empty %}
+            Nikdo nehraje.
         {% endfor %}
     </div>
     <div class="movie-year">Rok: {{ movie.year }}</div>

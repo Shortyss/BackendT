@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Seznam herců</h1>
+<ul>
+    {% for actor in actors %}
+    <li><a href="{% url 'actor' actor.id %}">{{actor}} ({{actor.acting_in_movie.count}})</a> </li>
+    {% endfor %}
+</ul>
+<h1>Seznam režisérů</h1>
+    {% for director in directors %}
+        <li><a href="{% url 'actor' director.id %}">{{director}} ({{director.directing_movie.count}})</a> </li>
+    {% endfor %}
+{% endblock %}

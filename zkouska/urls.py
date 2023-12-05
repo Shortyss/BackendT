@@ -36,7 +36,12 @@ urlpatterns = [
     path('hello3/', hello3),
     path('hello4/', hello4),
 
-    path('movies/', movies, name='movies'),
+
     path('', index, name='index'),
+    path('movies/', movies, name='movies'),
     path('movie/<pk>/', movie, name='movie'),
+    path('actors/', actors, name='actors'),
+    path('actor/<pk>/', actor, name='actor'),
+    path('genre/<pk>/', movies_by_genre, name='genre'),
+    path('country/<pk>/', movies_by_country, name='country')
 ]

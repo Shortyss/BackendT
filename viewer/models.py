@@ -40,16 +40,19 @@ class Person(Model):
         if reference_date is None:
             reference_date = date.today()
 
+        if (self.date_of_death and self.date_of_death < reference_date):
+            return
+
         if self.birth_date:
-            age = reference_date.year - self.birth_date.year - (
-                        (reference_date.month, reference_date.day) < (self.birth_date.month, self.birth_date.day))
+            age = reference_date.year - self.birth_date.year #- (
+                      #  (reference_date.month, reference_date.day) < (self.birth_date.month, self.birth_date.day))
         else:
-            age = None
+            age = 100
 
         if not age or (self.date_of_death and self.date_of_death < reference_date):
             return age
-        else:
-            return None
+
+        return age
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
