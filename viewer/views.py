@@ -1,10 +1,17 @@
+from logging import getLogger
+
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import TemplateView, ListView, FormView
 
 from viewer.models import *
-
+from django.forms import Form, ModelChoiceField, Textarea, CharField, IntegerField
 
 # Create your views here.
+
+LOGGER = getLogger()
 
 
 def hello(request):
@@ -23,8 +30,17 @@ def hello3(request):
 def hello4(request):
     return render(request, template_name='hello.html')
 
+
 def index(request):
     return render(request, 'index.html', )
+
+
+def news(request):
+    return render(request, 'News.html', )
+
+
+def newsOnDVD(request):
+    return render(request, 'NewsOnDVD.html', )
 
 
 def movies(request):
@@ -65,11 +81,30 @@ def movies(request):
     context = {'movies': movies_list, 'genres': genre_list,  'filtered_by': ''}
     return render(request, 'movies.html', context)
 
+
+class MoviesView(View):
+    def get(self, request):
+        movies_list = Movie.objects.all()
+        context = {'movies': movies_list}
+        return render(request, 'movies.html', context)
+
+
+class MoviesTemplateView(TemplateView):
+    template_name = 'movies.html'
+    extra_context = {'movies': Movie.objects.all()}
+
+
+class MoviesListView(ListView):
+    template_name = 'movies2.html'
+    model = Movie
+
+
 def movies_by_genre(request, pk):
     genre_movies = Genre.objects.get(id=pk)
     genre_list = Genre.objects.all()
     context = {'movies': genre_movies.movies_of_genre.all(), 'genres': genre_list}
     return render(request, 'movies.html', context)
+
 
 def movies_by_country(request, pk):
     country_movies = Country.objects.get(id=pk)
@@ -78,10 +113,60 @@ def movies_by_country(request, pk):
     context = {'movies': country_movies.movies_in_country.all(), 'countries': country_list, 'genres': genre_list}
     return render(request, 'movies.html', context)
 
+
 def movie(request, pk):
     movie_object = Movie.objects.get(id=pk)
     context = {'movie': movie_object}
     return render(request, 'movie.html', context)
+
+
+class MovieForm(Form):
+    title_orig = CharField(max_length=64)
+    title_cz = CharField(max_length=64, required=False)
+    title_sk = CharField(max_length=64, required=False)
+    countries = ModelChoiceField(queryset=Country.objects)
+    genres = ModelChoiceField(queryset=Genre.objects)
+    directors = ModelChoiceField(queryset=Person.objects)
+    actors = ModelChoiceField(queryset=Person.objects)
+    year = IntegerField()
+    video = CharField(max_length=128, required=False)
+    description = CharField(widget=Textarea, required=False)
+
+    def clean_title_orig(self):
+        initial_form = super().clean()
+        initial = initial_form['title_orig'].strip()   #  odstraní prázdné znaky na začátku a na konci
+        return initial.capitalize()
+
+    def clean(self):
+        return super().clean()
+
+
+class MovieCreateView(FormView):
+    template_name = 'movie_create.html'
+    form_class = MovieForm
+    success_url = reverse_lazy('movie_create')
+
+    def form_valid(self, form):
+        result = super().form_valid(form)
+        cleaned_data = form.cleaned_data
+        Movie.objects.create(
+            title_orig=cleaned_data['title_orig'],
+            title_cz=cleaned_data['title_cz'],
+            title_sk=cleaned_data['title_sk'],
+            countries=cleaned_data['countries'],
+            genres=cleaned_data['genres'],
+            directors=cleaned_data['directors'],
+            actors=cleaned_data['actors'],
+            year=cleaned_data['year'],
+            video=cleaned_data['video'],
+            description=cleaned_data['description']
+        )
+        return result
+
+    def form_invalid(self, form):
+        LOGGER.warning('User provided invalid data.')
+        return super().form_invalid(form)
+
 
 def actors(request):
     actors_object = Person.objects.filter(acting_in_movie__isnull=False).distinct()
@@ -90,8 +175,21 @@ def actors(request):
     return render(request, 'actors.html', context)
 
 
-
 def actor(request, pk):
     actor_object = Person.objects.get(id=pk)
     context = {'actor': actor_object}
     return render(request, 'actor.html', context)
+
+
+class PersonsListView(ListView):
+    template_name = 'persons2.html'
+    model = Person
+
+
+# TODO: vytvořit CBV, která zvlášť zobrazí herce a zvlášť režiséry
+
+
+def person(request, pk):
+    person_obj = Person.objects.get(id=pk)
+    context = {'person': person_obj}
+    return render(request, 'person.html', context)

@@ -18,8 +18,8 @@
         <button>Login</button>
     </nav>
     <nav class="navContainer2">
-        <a href="News.html"><button>News in Cinemas</button></a>
-        <a href="NewsOnDVD.html"><button>News on DVD</button></a>
+        <a href="{% url 'News' %}"><button>News in Cinemas</button></a>
+        <a href="{% url 'NewsOnDVD' %}"><button>News on DVD</button></a>
         <a href="{% url 'movies' %}"><button>Movies</button></a>
         <a href="{% url 'actors' %}"><button>Actors</button></a>
         <button>Actor rankings</button>

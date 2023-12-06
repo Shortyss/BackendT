@@ -36,23 +36,17 @@ class Person(Model):
     created = DateTimeField(auto_now_add=True)
     updated = DateTimeField(auto_now=True)
 
-    def calculate_age(self, reference_date=None):
-        if reference_date is None:
-            reference_date = date.today()
-
-        if (self.date_of_death and self.date_of_death < reference_date):
-            return
-
-        if self.birth_date:
-            age = reference_date.year - self.birth_date.year #- (
-                      #  (reference_date.month, reference_date.day) < (self.birth_date.month, self.birth_date.day))
-        else:
-            age = 100
-
-        if not age or (self.date_of_death and self.date_of_death < reference_date):
-            return age
-
-        return age
+    @classmethod
+    def calculate_age(self, birth_date, date_of_death=None):
+        if birth_date:
+            if date_of_death:
+                delta = (date_of_death - birth_date)
+                return delta.years
+            else:
+                today = date.today()
+                delta = (today - birth_date)
+                return delta.years
+        return None
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

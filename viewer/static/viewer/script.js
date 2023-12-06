@@ -16,12 +16,12 @@ updateTime();
 
 var currentMovie = 0;
 var movieImages = [
-    "./pic of movie/movies/Die hard.webp",
-    "./pic of movie/movies/supersotre.jpg",
-    "./pic of movie/movies/Surviving Christmas.jpg",
-    "./pic of movie/movies/Pulp Fiction.jpg",
-    "./pic of movie/movies/Just Go with It.jpg",
-    "./pic of movie/movies/Die Goldfische.jpg",
+    "/viewer/static/viewer/movies/DieHard.webp",
+    "/static/viewer/movies/Superstore.jpg",
+    "/static/viewer/movies/SurvivingChristmas.jpg",
+    "/static/viewer/movies/PulpFiction.jpg",
+    "/static/viewer/movies/JustGoWithIt.jpg",
+    "/static/viewer/movies/DieGoldfische.jpg",
 ];
 
 const links = [

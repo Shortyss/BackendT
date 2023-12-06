@@ -38,7 +38,13 @@ urlpatterns = [
 
 
     path('', index, name='index'),
+    path('News/', news, name='News'),
+    path('NewsOnDVD', newsOnDVD, name='NewsOnDVD'),
     path('movies/', movies, name='movies'),
+    path('movie/create/', MovieCreateView.as_view(), name='movie_create'),
+    # path('movies/', MoviesView.as_view(), name='MoviesView', name=MoviesView),
+    # path('movies/', MoviesTemplateView.as_view(), name=MoviesTemplateView),
+    # path('movies2/', MoviesListView.as_view(), name=MoviesListView),
     path('movie/<pk>/', movie, name='movie'),
     path('actors/', actors, name='actors'),
     path('actor/<pk>/', actor, name='actor'),
