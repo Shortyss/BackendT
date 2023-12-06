@@ -16,8 +16,8 @@ updateTime();
 
 var currentMovie = 0;
 var movieImages = [
-    "/viewer/static/viewer/movies/DieHard.webp",
-    "/static/viewer/movies/Superstore.jpg",
+    "viewer/movies/Diehard.webp",
+    "/static/viewer/movies/superstore.jpg",
     "/static/viewer/movies/SurvivingChristmas.jpg",
     "/static/viewer/movies/PulpFiction.jpg",
     "/static/viewer/movies/JustGoWithIt.jpg",
