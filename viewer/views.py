@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import TemplateView, ListView, FormView
 
 from viewer.models import *
-from django.forms import Form, ModelChoiceField, Textarea, CharField, IntegerField
+from django.forms import Form, ModelChoiceField, Textarea, CharField, IntegerField, ModelMultipleChoiceField
 
 # Create your views here.
 
@@ -124,10 +124,10 @@ class MovieForm(Form):
     title_orig = CharField(max_length=64)
     title_cz = CharField(max_length=64, required=False)
     title_sk = CharField(max_length=64, required=False)
-    countries = ModelChoiceField(queryset=Country.objects)
-    genres = ModelChoiceField(queryset=Genre.objects)
-    directors = ModelChoiceField(queryset=Person.objects)
-    actors = ModelChoiceField(queryset=Person.objects)
+    countries = ModelMultipleChoiceField(queryset=Country.objects)
+    genres = ModelMultipleChoiceField(queryset=Genre.objects)
+    directors = ModelMultipleChoiceField(queryset=Person.objects)
+    actors = ModelMultipleChoiceField(queryset=Person.objects)
     year = IntegerField()
     video = CharField(max_length=128, required=False)
     description = CharField(widget=Textarea, required=False)
