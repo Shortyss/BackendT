@@ -48,7 +48,12 @@ urlpatterns = [
     path('movie/<pk>/', movie, name='movie'),
     path('actors/', actors, name='actors'),
     path('actor/<pk>/', actor, name='actor'),
-    path('person/create/', PersonCreateView.as_view(), name='person_create'),
+    #path('person/create/', PersonCreateView.as_view(), name='person_create'),
     path('genre/<pk>/', movies_by_genre, name='genre'),
-    path('country/<pk>/', movies_by_country, name='country')
+    path('country/<pk>/', movies_by_country, name='country'),
+    path('person/create/', PersonCreateView1.as_view(), name='person_create'),
+    #path('person/create/', PersonModelForm, name='person_create'),
+    path('actor/update/<pk>/', PersonUpdateView.as_view(), name='person_update'),
+    path('person/delete/<pk>/', PersonDeleteView.as_view(), name='person_delete'),
+    path('person/<pk>/', person, name='person'),
 ]

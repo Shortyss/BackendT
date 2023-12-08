@@ -1,4 +1,5 @@
 from logging import getLogger
+import datetime
 
 from django.core.files.base import ContentFile
 from django.http import HttpResponse
@@ -10,10 +11,10 @@ from django.views.generic import TemplateView, ListView, FormView
 
 from viewer.models import *
 from django.forms import Form, DateField, ModelChoiceField, Textarea, CharField, IntegerField, ModelMultipleChoiceField, \
-    ImageField, SelectDateWidget
+    ImageField, SelectDateWidget, ModelForm, DateInput
 
 from django import forms
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 
@@ -207,8 +208,8 @@ class PersonForm(Form):
     first_name = CharField(max_length=32)
     last_name = CharField(max_length=32)
     nationality = CharField(max_length=64)
-    birth_date = DateField(widget=SelectDateWidget(), label='Birth Date')
-    date_of_death = DateField(widget=SelectDateWidget(), label='Date of death')
+    birth_date = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 1)), label='Birth Date')
+    date_of_death = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 1)), required=False, label='Date of Death')
     biography = CharField(widget=forms.Textarea)
 
     def clean_first_name(self):
@@ -261,3 +262,59 @@ def person(request, pk):
     person_obj = Person.objects.get(id=pk)
     context = {'person': person_obj}
     return render(request, 'person.html', context)
+
+
+class PersonModelForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields['birth_date'].widget = DateInput(
+            attrs={
+                'type': 'date',
+                'placeholder': 'dd-mm-yyyy',
+                'class': 'form-control'
+            }
+        )
+
+    class Meta:
+        model = Person
+        fields = '__all__'
+        # fields = ['last_name', 'first_name]
+        # exclude = ['biography']
+
+    def clean_first_name(self):
+        initial_form = super().clean()
+        initial = initial_form['first_name'].strip()   #  odstraní prázdné znaky na začátku a na konci
+        return initial.capitalize()
+
+    def clean_last_name(self):
+        initial_form = super().clean()
+        initial = initial_form['last_name'].strip()   #  odstraní prázdné znaky na začátku a na konci
+        return initial.capitalize()
+
+
+class PersonCreateView1(CreateView):
+    template_name = 'person_create.html'
+    form_class = PersonModelForm
+    success_url = reverse_lazy('person_create')
+
+    def form_invalid(self, form):
+        LOGGER.warning('User provided invalid data.')
+        return super().form_invalid(form)
+
+
+class PersonUpdateView(UpdateView):
+    template_name = 'person_create.html'
+    model = Person
+    form_class = PersonModelForm
+    success_url = reverse_lazy('persons')
+
+    def form_invalid(self, form):
+        LOGGER.warning('User provided invalid data.')
+        return super().form_invalid(form)
+
+
+class PersonDeleteView(DeleteView):
+    template_name = 'person_confirm_delete.html'
+    model = Person
+    success_url = reverse_lazy('persons')
