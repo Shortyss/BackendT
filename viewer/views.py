@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import TemplateView, ListView, FormView
 
 from viewer.models import *
-from django.forms import Form, ModelChoiceField, Textarea, CharField, IntegerField, ModelMultipleChoiceField
+from django.forms import Form, ModelChoiceField, Textarea, CharField, IntegerField, ModelMultipleChoiceField, ImageField
 
 # Create your views here.
 
@@ -129,6 +129,7 @@ class MovieForm(Form):
     directors = ModelMultipleChoiceField(queryset=Person.objects)
     actors = ModelMultipleChoiceField(queryset=Person.objects)
     year = IntegerField()
+    image = ImageField(required=False)
     video = CharField(max_length=128, required=False)
     description = CharField(widget=Textarea, required=False)
 
@@ -149,18 +150,23 @@ class MovieCreateView(FormView):
     def form_valid(self, form):
         result = super().form_valid(form)
         cleaned_data = form.cleaned_data
-        Movie.objects.create(
+        new_movie = Movie.objects.create(
             title_orig=cleaned_data['title_orig'],
             title_cz=cleaned_data['title_cz'],
             title_sk=cleaned_data['title_sk'],
-            countries=cleaned_data['countries'],
-            genres=cleaned_data['genres'],
-            directors=cleaned_data['directors'],
-            actors=cleaned_data['actors'],
+            # countries=cleaned_data['countries'],
+            # genres=cleaned_data['genres'],
+            # directors=cleaned_data['directors'],
+            # actors=cleaned_data['actors'],
             year=cleaned_data['year'],
             video=cleaned_data['video'],
             description=cleaned_data['description']
         )
+
+        new_movie.countries.set(cleaned_data['countries'])
+        new_movie.genres.set(cleaned_data['genres'])
+        new_movie.directors.set(cleaned_data['directors'])
+        new_movie.actors.set(cleaned_data['actors'])
         return result
 
     def form_invalid(self, form):

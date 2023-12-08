@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.db import models
 from django.db.models import Model, CharField, IntegerField, TextField, DateField, ForeignKey, DO_NOTHING, \
@@ -36,17 +36,17 @@ class Person(Model):
     created = DateTimeField(auto_now_add=True)
     updated = DateTimeField(auto_now=True)
 
-    @classmethod
-    def calculate_age(self, birth_date, date_of_death=None):
-        if birth_date:
-            if date_of_death:
-                delta = (date_of_death - birth_date)
-                return delta.years
-            else:
-                today = date.today()
-                delta = (today - birth_date)
-                return delta.years
-        return None
+    def calculate_age(self):
+        today = datetime.now().date()
+
+        if self.date_of_death:
+            # Pokud hercův úmrtí již nastalo, vypočtěme věk při úmrtí
+            age_at_death = (self.date_of_death - self.birth_date).days // 365
+            return age_at_death
+        else:
+            # Pokud hercův úmrtí nenastalo, vypočtěme aktuální věk
+            age_now = (today - self.birth_date).days // 365
+            return age_now
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -59,6 +59,7 @@ class Movie(Model):
     title_orig = CharField(max_length=64, null=False, blank=False)
     title_cz = CharField(max_length=64, null=True, blank=True)
     title_sk = CharField(max_length=64, null=True, blank=True)
+    movie_image = models.ImageField(upload_to='movie_images/', blank=True, null=True)
     countries = ManyToManyField(Country, blank=True, related_name='movies_in_country')  # umožňuje jít oběma směry tabulek
     genres = ManyToManyField(Genre, blank=True, related_name='movies_of_genre')
     directors = ManyToManyField(Person, blank=False, related_name='directing_movie')
