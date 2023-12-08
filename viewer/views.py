@@ -1,13 +1,21 @@
 from logging import getLogger
 
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.text import slugify
 from django.views import View
 from django.views.generic import TemplateView, ListView, FormView
 
 from viewer.models import *
-from django.forms import Form, ModelChoiceField, Textarea, CharField, IntegerField, ModelMultipleChoiceField, ImageField
+from django.forms import Form, DateField, ModelChoiceField, Textarea, CharField, IntegerField, ModelMultipleChoiceField, \
+    ImageField, SelectDateWidget
+
+from django import forms
+from django.views.generic.edit import FormView
+from django.views.generic.list import ListView
+
 
 # Create your views here.
 
@@ -154,6 +162,7 @@ class MovieCreateView(FormView):
             title_orig=cleaned_data['title_orig'],
             title_cz=cleaned_data['title_cz'],
             title_sk=cleaned_data['title_sk'],
+            image=cleaned_data['image'],
             # countries=cleaned_data['countries'],
             # genres=cleaned_data['genres'],
             # directors=cleaned_data['directors'],
@@ -167,6 +176,13 @@ class MovieCreateView(FormView):
         new_movie.genres.set(cleaned_data['genres'])
         new_movie.directors.set(cleaned_data['directors'])
         new_movie.actors.set(cleaned_data['actors'])
+
+        if 'image' in self.request.FILES:
+            image_file = self.request.FILES['image']
+            # Vytvoření názvu souboru na základě slugifikovaného názvu filmu
+            image_name = slugify(new_movie.title_orig) + '.' + image_file.name.split('.')[-1]
+            new_movie.image.save(image_name, ContentFile(image_file.read()), save=True)
+
         return result
 
     def form_invalid(self, form):
@@ -185,6 +201,52 @@ def actor(request, pk):
     actor_object = Person.objects.get(id=pk)
     context = {'actor': actor_object}
     return render(request, 'actor.html', context)
+
+
+class PersonForm(Form):
+    first_name = CharField(max_length=32)
+    last_name = CharField(max_length=32)
+    nationality = CharField(max_length=64)
+    birth_date = DateField(widget=SelectDateWidget(), label='Birth Date')
+    date_of_death = DateField(widget=SelectDateWidget(), label='Date of death')
+    biography = CharField(widget=forms.Textarea)
+
+    def clean_first_name(self):
+        initial_form = super().clean()
+        initial = initial_form['first_name'].strip()   #  odstraní prázdné znaky na začátku a na konci
+        return initial.capitalize()
+
+    def clean_last_name(self):
+        initial_form = super().clean()
+        initial = initial_form['last_name'].strip()   #  odstraní prázdné znaky na začátku a na konci
+        return initial.capitalize()
+
+    def clean(self):
+        return super().clean()
+
+
+class PersonCreateView(FormView):
+    template_name = 'person_create.html'
+    form_class = PersonForm
+    success_url = reverse_lazy('person_create')
+
+    def form_valid(self, form):
+        result = super().form_valid(form)
+        cleaned_data = form.cleaned_data
+        Person.objects.create(
+            first_name=cleaned_data['first_name'],
+            last_name=cleaned_data['last_name'],
+            nationality=cleaned_data['nationality'],
+            birth_date=cleaned_data['birth_date'],
+            date_of_death=cleaned_data['date_of_death'],
+            biography=cleaned_data['biography'],
+        )
+
+        return result
+
+    def form_invalid(self, form):
+        LOGGER.warning('User provided invalid data.')
+        return super().form_invalid(form)
 
 
 class PersonsListView(ListView):

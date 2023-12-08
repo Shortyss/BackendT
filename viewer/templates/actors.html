@@ -11,4 +11,6 @@
     {% for director in directors %}
         <li><a href="{% url 'actor' director.id %}">{{director}} ({{director.directing_movie.count}})</a> </li>
     {% endfor %}
+
+
 {% endblock %}

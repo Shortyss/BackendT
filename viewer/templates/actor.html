@@ -5,7 +5,7 @@
 <div class="person-details">
     <div class="person-first-name">Jméno: {{ actor.first_name }}</div>
     <div class="person-last-name">Příjmení: {{ actor.last_name }}</div>
-    <div class="person-birth-date">Datum narození: {{ actor.birth_date }} (věk: {{ actor.calculate_age }})</div>
+    <div class="person-birth-date">Datum narození: {{ actor.birth_date }} (věk: {{ actor.calculate_age }} let)</div>
     <div class="person-acting-in-movies">Herec:
         {% for movie in actor.acting_in_movie.all %}
             <span class="person-acting-in-movie"><a href="{% url 'movie' movie.id %}">{{ movie }}</a></span>
@@ -22,4 +22,5 @@
     </div>
     <div class="person-biography">Biografie: {{ actor.biography }}</div>
 </div>
+
 {% endblock %}

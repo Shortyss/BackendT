@@ -40,11 +40,9 @@ class Person(Model):
         today = datetime.now().date()
 
         if self.date_of_death:
-            # Pokud hercův úmrtí již nastalo, vypočtěme věk při úmrtí
             age_at_death = (self.date_of_death - self.birth_date).days // 365
             return age_at_death
         else:
-            # Pokud hercův úmrtí nenastalo, vypočtěme aktuální věk
             age_now = (today - self.birth_date).days // 365
             return age_now
 
