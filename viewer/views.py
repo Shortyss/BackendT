@@ -131,13 +131,13 @@ class MovieUpdateView(UpdateView):
     template_name = 'movie_create.html'
     model = Movie
     form_class = MovieModelForm
-    success_url = reverse_lazy('movies')
+    success_url = reverse_lazy('administration')
 
 
 class MovieDeleteView(DeleteView):
     template_name = 'person_confirm_delete.html'
     model = Movie
-    success_url = reverse_lazy('movies')
+    success_url = reverse_lazy('administration')
 
 
 def movies_by_genre(request, pk):
@@ -196,7 +196,7 @@ class GenreUpdateView(UpdateView):
 class GenreDeleteView(DeleteView):
     template_name = 'person_confirm_delete.html'
     model = Genre
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('administration')
 
 
 class CountryModelForm(ModelForm):
@@ -421,7 +421,7 @@ class PersonUpdateView(UpdateView):
     template_name = 'person_create.html'
     model = Person
     form_class = PersonModelForm
-    success_url = reverse_lazy('persons')
+    success_url = reverse_lazy('administration')
 
     def form_invalid(self, form):
         LOGGER.warning('User provided invalid data.')
@@ -431,4 +431,4 @@ class PersonUpdateView(UpdateView):
 class PersonDeleteView(DeleteView):
     template_name = 'person_confirm_delete.html'
     model = Person
-    success_url = reverse_lazy('persons')
+    success_url = reverse_lazy('administration')
