@@ -37,6 +37,8 @@
     <div class="movie-year">Rok: {{ movie.year }}</div>
     <div class="movie-title-description">Popis: {{ movie.description }}</div>
     <div class="movie-movie-video"><a href="{{movie.video}}">video</a></div>
+        <a href="{% url 'movie_update' movie.id %}"><button>Upravit</button></a>
+        <a href="{% url 'movie_delete' movie.id %}"><button>Smazat</button></a>
+    </div>
 </div>
-
 {% endblock %}

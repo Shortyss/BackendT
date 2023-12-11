@@ -1,27 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ person }}</h1>
-<div class="person-details">
-    <div class="person-first-name">Jméno: {{ person.first_name }}</div>
-    <div class="person-last-name">Příjmení: {{ person.last_name }}</div>
-    <div class="person-birth-date">Datum narození: {{ person.birth_date }}</div>
-    <div class="person-acting-in-movies">Herec:
-        {% for movie in person.acting_in_movie.all %}
-            <span class="person-acting-in-movie"><a href="{% url 'movie' movie.id %}">{{ movie }}</a></span>
-        {% empty %}
-            Nehrál v žádném filmu
-        {% endfor %}
+<div class="content-container">
+    <h1>{{ person }}</h1>
+    <div class="person-details">
+        <div class="person-first-name">Jméno: {{ person.first_name }}</div>
+        <div class="person-last-name">Příjmení: {{ person.last_name }}</div>
+        <div class="person-birth-date">Datum narození: {{ person.birth_date }}</div>
+        <div class="person-acting-in-movies">Herec:
+            {% for movie in person.acting_in_movie.all %}
+                <span class="person-acting-in-movie"><a href="{% url 'movie' movie.id %}">{{ movie }}</a></span>
+            {% empty %}
+                Nehrál v žádném filmu
+            {% endfor %}
+        </div>
+        <div class="person-directing-movies">Režisér:
+            {% for movie in person.directing_movie.all %}
+                <span class="person-directing-movie"><a href="{% url 'movie' movie.id %}">{{ movie }}</a></span>
+            {% empty %}
+                Nerežíroval žádný film
+            {% endfor %}
+        </div>
+        <div class="person-biography">Biografie: {{ person.biography }}</div>
+        <a href="{% url 'person_update' person.id %}"><button>Upravit</button></a>
+        <a href="{% url 'person_delete' person.id %}"><button>Smazat</button></a>
     </div>
-    <div class="person-directing-movies">Režisér:
-        {% for movie in person.directing_movie.all %}
-            <span class="person-directing-movie"><a href="{% url 'movie' movie.id %}">{{ movie }}</a></span>
-        {% empty %}
-            Nerežíroval žádný film
-        {% endfor %}
-    </div>
-    <div class="person-biography">Biografie: {{ person.biography }}</div>
-    <a href="{% url 'person_update' person.id %}"><button>Upravit</button></a>
-    <a href="{% url 'person_delete' person.id %}"><button>Smazat</button></a>
 </div>
 {% endblock %}

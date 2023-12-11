@@ -52,6 +52,10 @@ def newsOnDVD(request):
     return render(request, 'NewsOnDVD.html', )
 
 
+def administration(request):
+    return render(request, 'administration.html', )
+
+
 def movies(request):
     g = request.GET.get('genre', '')
     c = request.GET.get('country', '')
@@ -95,7 +99,7 @@ class MoviesView(View):
     def get(self, request):
         movies_list = Movie.objects.all()
         context = {'movies': movies_list}
-        return render(request, 'movies.html', context)
+        return render(request, 'movies_admin.html', context)
 
 
 class MoviesTemplateView(TemplateView):
@@ -106,6 +110,34 @@ class MoviesTemplateView(TemplateView):
 class MoviesListView(ListView):
     template_name = 'movies2.html'
     model = Movie
+
+
+class MovieModelForm(ModelForm):
+
+    class Meta:
+        model = Movie
+        fields = '__all__'
+
+    def clean_title_orig(self):
+        initial_form = super().clean()
+        initial = initial_form['title_orig'].strip()
+        return initial.capitalize()
+
+    def clean(self):
+        return super().clean()
+
+
+class MovieUpdateView(UpdateView):
+    template_name = 'movie_create.html'
+    model = Movie
+    form_class = MovieModelForm
+    success_url = reverse_lazy('movies')
+
+
+class MovieDeleteView(DeleteView):
+    template_name = 'person_confirm_delete.html'
+    model = Movie
+    success_url = reverse_lazy('movies')
 
 
 def movies_by_genre(request, pk):
@@ -127,6 +159,82 @@ def movie(request, pk):
     movie_object = Movie.objects.get(id=pk)
     context = {'movie': movie_object}
     return render(request, 'movie.html', context)
+
+
+class GenreModelForm(ModelForm):
+
+    class Meta:
+        model = Genre
+        fields = '__all__'
+
+    def clean_name(self):
+        cleaned_data = super().clean()
+        name = cleaned_data['name'].strip().capitalize()
+        return name
+
+
+class GenresView(View):
+    def get(self, request):
+        genres_list = Genre.objects.all()
+        context = {'genres': genres_list}
+        return render(request, 'genre_admin.html', context)
+
+
+class GenreCreateView(CreateView):
+    template_name = 'genre_create.html'
+    form_class = GenreModelForm
+    success_url = reverse_lazy('administration')
+
+
+class GenreUpdateView(UpdateView):
+    template_name = 'genre_admin.html'
+    model = Genre
+    form_class = GenreModelForm
+    success_url = reverse_lazy('administration')
+
+
+class GenreDeleteView(DeleteView):
+    template_name = 'person_confirm_delete.html'
+    model = Genre
+    success_url = reverse_lazy('index')
+
+
+class CountryModelForm(ModelForm):
+
+    class Meta:
+        model = Country
+        fields = '__all__'
+
+    def clean_name(self):
+        cleaned_data = super().clean()
+        name = cleaned_data['name'].strip().capitalize()
+        return name
+
+
+class CountryCreateView(CreateView):
+    template_name = 'country_admin.html'
+    form_class = CountryModelForm
+    success_url = reverse_lazy('administration')
+
+
+class CountryView(View):
+    def get(self, request):
+        countries_list = Country.objects.all()
+        context = {'countries': countries_list}
+        return render(request, 'country_admin.html', context)
+
+
+class CountryUpdateView(UpdateView):
+    template_name = 'country_admin.html'
+    model = Country
+    form_class = CountryModelForm
+    success_url = reverse_lazy('administration')
+
+
+class CountryDeleteView(DeleteView):
+    template_name = 'country_confirm_delete.html'  # TODO country_confirm_delete.html
+    model = Country
+    success_url = reverse_lazy('administration')
 
 
 class MovieForm(Form):
@@ -251,9 +359,15 @@ class PersonCreateView(FormView):
 
 
 class PersonsListView(ListView):
-    template_name = 'persons2.html'
+    template_name = 'persons_admin.html'
     model = Person
 
+
+class PersonsView(View):
+    def get(self, request):
+        persons_list = Person.objects.all()
+        context = {'persons': persons_list}
+        return render(request, 'persons_admin.html', context)
 
 # TODO: vytvořit CBV, která zvlášť zobrazí herce a zvlášť režiséry
 

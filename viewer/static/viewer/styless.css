@@ -46,6 +46,11 @@ button:hover {
     border: 2px solid black;
 }
 
+.navigate button{
+    height: 40px;
+    width: 150px;
+}
+
 .navContainer {
     height: 40px;
     width: 100vw;
@@ -86,7 +91,7 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
+    min_height: 100vh;
 }
 
 .movie-box {
@@ -189,13 +194,13 @@ main {
 }
 
 footer {
-    height: 150px;
+    height: 100px;
     width: 100vw;
     background: black;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
+    position: end;
     bottom: 0;
 }
 
@@ -222,4 +227,10 @@ form {
 
 form input {
     margin-bottom: 10px;
+}
+
+.content-container {
+    min_height: 100vw;
+    margin: 20px;
+    padding: 20px;
 }

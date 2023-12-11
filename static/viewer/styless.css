@@ -224,3 +224,8 @@ form {
 form input {
     margin-bottom: 10px;
 }
+
+.content-container {
+    margin: 20px;
+    padding: 20px;
+}

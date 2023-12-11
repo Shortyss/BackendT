@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Filmy</h1>
+<ul>
+    {% for movie in movies %}
+    <li>
+        <a href="{% url 'movie' movie.id %}">{{movie}}</a>
+        <a href="{% url 'movie_update' movie.id %}"><button>Upravit</button></a>
+        <a href="{% url 'movie_delete' movie.id %}"><button>Smazat</button></a>
+    </li>
+    {% endfor %}
+    <li>
+        <a href="{% url 'movie_create' %}"><button>Vytvořit nový</button></a>
+    </li>
+</ul>
+{% endblock %}

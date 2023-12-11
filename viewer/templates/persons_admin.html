@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Osobnosti</h1>
+<ul>
+    {% for person in persons %}
+    <li>
+        <a href="{% url 'person' person.id %}">{{person}}</a>
+        <a href="{% url 'person_update' person.id %}"><button>Upravit</button></a>
+        <a href="{% url 'person_delete' person.id %}"><button>Smazat</button></a>
+    </li>
+    {% endfor %}
+    <li>
+        <a href="{% url 'person_create' %}"><button>Vytvořit nový</button></a>
+    </li>
+</ul>    
+{% endblock %}
