@@ -15,7 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.contrib.auth.views import LoginView
+from django.urls import path, include
 
 from viewer.models import *
 from viewer.views import *
@@ -35,6 +36,9 @@ urlpatterns = [
     path('hello2/<s>', hello2),
     path('hello3/', hello3),
     path('hello4/', hello4),
+
+    path('accounts/login/', LoginView.as_view(), name='login'),
+    path('accounts/', include('django.contrib.auth.urls')),  # defaultní views pro přihlašování/odhlašován/...
 
 
     path('', index, name='index'),
