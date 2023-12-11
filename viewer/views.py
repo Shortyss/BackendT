@@ -2,8 +2,9 @@ from logging import getLogger
 import datetime
 
 from django.core.files.base import ContentFile
+from django.db.models import Avg
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.text import slugify
 from django.views import View
@@ -21,6 +22,7 @@ from django.views.generic.list import ListView
 # Create your views here.
 
 LOGGER = getLogger()
+
 
 
 def hello(request):
@@ -157,7 +159,20 @@ def movies_by_country(request, pk):
 
 def movie(request, pk):
     movie_object = Movie.objects.get(id=pk)
-    context = {'movie': movie_object}
+    avg_rating = None
+    if Rating.objects.filter(movie=movie_object).count() > 0:
+        avg_rating = Rating.objects.filter(movie=movie_object).aggregate(Avg('rating'))
+
+    # hodnocení daného uživatele
+    user = request.user
+    user_rating = None
+    if request.user.is_authenticated:
+        if Rating.objects.filter(movie=movie_object, user=user).count() > 0:
+            user_rating = Rating.objects.get(movie=movie_object, user=user)
+
+
+
+    context = {'movie': movie_object, 'avg_rating': avg_rating, 'user_rating': user_rating}
     return render(request, 'movie.html', context)
 
 
@@ -432,3 +447,28 @@ class PersonDeleteView(DeleteView):
     template_name = 'person_confirm_delete.html'
     model = Person
     success_url = reverse_lazy('administration')
+
+
+def rate_movie(request):
+    user = request.user
+    if request.method == 'POST':
+        movie_id = request.POST.get('movie_id')
+        movie_object = Movie.objects.get(id=movie_id)
+        rating = request.POST.get('rating')
+
+        if Rating.objects.filter(movie=movie_object, user=user).count() > 0:
+            # aktualizujeme hodnocení
+            user_rating = Rating.objects.get(movie=movie_object, user=user)
+            user_rating.rating = rating
+            user_rating.save()
+        else:
+            Rating.objects.create(
+                movie=movie_object,
+                user=user,
+                rating=rating
+            )
+    return redirect(f"/movie/{movie_id}/")
+
+
+def add_comment(request):
+    pass

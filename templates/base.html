@@ -1,6 +1,6 @@
 {% load static %}
 
-<!DOCTYPE html>>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -14,8 +14,13 @@
         <img class="headContainer-part" alt="Yoda2" src="{% static 'viewer/images/wp7248743.webp' %}">
     </header>
     <nav class="navContainer">
-        <button>Register</button>
-        <a href="{% url 'login' %}"><button>Login</button></a>
+        {% if request.user.is_authenticated %}
+            Přihlášen jako: {{ request.user.username }}
+            <a href="{% url 'logout' %}"><button>Logout</button></a>
+        {% else %}
+            <a href="{% url 'signup' %}"><button>Register</button></a>
+            <a href="{% url 'login' %}"><button>Login</button></a>
+        {% endif %}
     </nav>
     <nav class="navContainer2">
         <a href="{% url 'News' %}"><button>News in Cinemas</button></a>
@@ -24,7 +29,9 @@
         <a href="{% url 'actors' %}"><button>Actors</button></a>
         <a href="{% url 'movie_create' %}"><button>Create Movie</button></a>
         <a href="{% url 'person_create' %}"><button>Create Person</button></a>
-        <a href="{% url 'administration' %}"> <button>Administrace</button></a>
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'administration' %}"> <button>Administrace</button></a>
+        {% endif %}
         <button>Movie Shop</button>
         <button>Merchandise Store</button>
     </nav>

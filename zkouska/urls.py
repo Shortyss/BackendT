@@ -15,9 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path, include
 
+from accounts.views import SignUpView
 from viewer.models import *
 from viewer.views import *
 
@@ -38,7 +39,8 @@ urlpatterns = [
     path('hello4/', hello4),
 
     path('accounts/login/', LoginView.as_view(), name='login'),
-    path('accounts/', include('django.contrib.auth.urls')),  # defaultní views pro přihlašování/odhlašován/...
+    path('accounts/signup/', SignUpView.as_view(), name='signup'),
+    path('accounts/', include('django.contrib.auth.urls')),    # defaultní views pro přihlašování/odhlašován/...
 
 
     path('', index, name='index'),
@@ -73,4 +75,6 @@ urlpatterns = [
     path('actor/update/<pk>/', PersonUpdateView.as_view(), name='person_update'),
     path('person/delete/<pk>/', PersonDeleteView.as_view(), name='person_delete'),
     path('person/<pk>/', person, name='person'),
+
+    path('rate_movie/', rate_movie, name='rate_movie'),
 ]

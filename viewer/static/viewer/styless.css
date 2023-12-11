@@ -234,3 +234,9 @@ form input {
     margin: 20px;
     padding: 20px;
 }
+
+.movie_details {
+   min_height: 100vw;
+   margin: 20px;
+   padding: 20px;
+}
