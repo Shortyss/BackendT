@@ -5,7 +5,7 @@
 <div class="movie-details">
     <div class="movie-avg-rating">Průměrné hodnocení:
         {% if avg_rating %}
-            {{ avg_rating.rating__avg }}
+            {{ avg_rating.rating__avg |floatformat:"0"}}
         {% else %}
             Dosud nehodnoceno
         {% endif %}
@@ -19,6 +19,7 @@
             {% else %}
                 <p>Obrázek není k dispozici.</p>
             {% endif %}
+    </div>
     <div class="movie-countries">Země:
         {% for country in movie.countries.all %}
             <span class="movie-country"><a href="{% url 'country' country.id %}">{{ country }}</a></span>
@@ -60,6 +61,30 @@
         <a href="{% url 'movie_update' movie.id %}"><button>Upravit</button></a>
         <a href="{% url 'movie_delete' movie.id %}"><button>Smazat</button></a>
     {% endif %}
-    </div>
+
+    {% if request.user.is_authenticated %}
+    <form action="{% url 'add_comment' %}" method="post">
+        {% csrf_token %}
+        <label for="rating">Pridat komentar:</label>
+        <div>
+            <textarea name="comment" cols="100" rows="5"></textarea>
+        </div>
+        <input type="hidden" name="movie_id" value="{{ movie.id }}">
+        <input type="submit" value="Odeslat komentar">
+    </form>
+    {% endif %}
+
+    <h3>Komentáře k filmu:</h3>
+    {% for comment in comments %}
+        <p>
+        {{ comment.comment }}
+        <h6><strong>{{ comment.user }}</strong></h6>
+        <h6>{{ comment.created }}</h6>
+        </p>
+        <hr>
+    {% empty %}
+        Zatím žádný komentář.
+
+    {% endfor %}
 </div>
 {% endblock %}

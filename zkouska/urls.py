@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import views as auth_views
 from django.urls import path, include
 
 from accounts.views import SignUpView
@@ -38,12 +39,13 @@ urlpatterns = [
     path('hello3/', hello3),
     path('hello4/', hello4),
 
+    path('', index, name='index'),
     path('accounts/login/', LoginView.as_view(), name='login'),
     path('accounts/signup/', SignUpView.as_view(), name='signup'),
-    path('accounts/', include('django.contrib.auth.urls')),    # defaultní views pro přihlašování/odhlašován/...
+    path('accounts/', include('django.contrib.auth.urls')),     # defaultní views pro přihlašování/odhlašován/...
 
 
-    path('', index, name='index'),
+
     path('News/', news, name='News'),
     path('NewsOnDVD', newsOnDVD, name='NewsOnDVD'),
     path('movies/', movies, name='movies'),
@@ -62,7 +64,7 @@ urlpatterns = [
     path('genre_admin/', GenresView.as_view(), name='genre_admin'),
     path('genre/<pk>/', movies_by_genre, name='genre'),
     path('genre/update/<pk>', GenreUpdateView.as_view(), name='genre_update'),
-    path('genre/create/', GenreCreateView.as_view(), name='genre_create'),
+    path('genres/create/', GenreCreateView.as_view(), name='genre_create'),
     path('genre/delete/<pk>/', GenreDeleteView.as_view(), name='genre_delete'),
     path('country/<pk>/', movies_by_country, name='country'),
     # path('administration/', CountryView.as_view(), name='country_view'),
@@ -77,4 +79,5 @@ urlpatterns = [
     path('person/<pk>/', person, name='person'),
 
     path('rate_movie/', rate_movie, name='rate_movie'),
+    path('add_comment/', add_comment, name='add_comment'),
 ]

@@ -1,6 +1,8 @@
 from logging import getLogger
 import datetime
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django.db.models import Avg
 from django.http import HttpResponse
@@ -53,7 +55,7 @@ def news(request):
 def newsOnDVD(request):
     return render(request, 'NewsOnDVD.html', )
 
-
+@login_required
 def administration(request):
     return render(request, 'administration.html', )
 
@@ -129,17 +131,19 @@ class MovieModelForm(ModelForm):
         return super().clean()
 
 
-class MovieUpdateView(UpdateView):
+class MovieUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'movie_create.html'
     model = Movie
     form_class = MovieModelForm
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.change_movie'
 
 
-class MovieDeleteView(DeleteView):
+class MovieDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'person_confirm_delete.html'
     model = Movie
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.delete_movie'
 
 
 def movies_by_genre(request, pk):
@@ -170,9 +174,9 @@ def movie(request, pk):
         if Rating.objects.filter(movie=movie_object, user=user).count() > 0:
             user_rating = Rating.objects.get(movie=movie_object, user=user)
 
+    comments = Comment.objects.filter(movie=movie_object).order_by('-created')
 
-
-    context = {'movie': movie_object, 'avg_rating': avg_rating, 'user_rating': user_rating}
+    context = {'movie': movie_object, 'avg_rating': avg_rating, 'user_rating': user_rating, 'comments': comments}
     return render(request, 'movie.html', context)
 
 
@@ -195,23 +199,26 @@ class GenresView(View):
         return render(request, 'genre_admin.html', context)
 
 
-class GenreCreateView(CreateView):
+class GenreCreateView(LoginRequiredMixin, CreateView):
     template_name = 'genre_create.html'
     form_class = GenreModelForm
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.add_genre'
 
 
-class GenreUpdateView(UpdateView):
+class GenreUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'genre_admin.html'
     model = Genre
     form_class = GenreModelForm
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.change_genre'
 
 
-class GenreDeleteView(DeleteView):
+class GenreDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'person_confirm_delete.html'
     model = Genre
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.delete_genre'
 
 
 class CountryModelForm(ModelForm):
@@ -226,10 +233,11 @@ class CountryModelForm(ModelForm):
         return name
 
 
-class CountryCreateView(CreateView):
+class CountryCreateView(LoginRequiredMixin, CreateView):
     template_name = 'country_admin.html'
     form_class = CountryModelForm
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.add_country'
 
 
 class CountryView(View):
@@ -239,17 +247,19 @@ class CountryView(View):
         return render(request, 'country_admin.html', context)
 
 
-class CountryUpdateView(UpdateView):
+class CountryUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'country_admin.html'
     model = Country
     form_class = CountryModelForm
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.change_country'
 
 
-class CountryDeleteView(DeleteView):
+class CountryDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'country_confirm_delete.html'  # TODO country_confirm_delete.html
     model = Country
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.delete_country'
 
 
 class MovieForm(Form):
@@ -274,10 +284,12 @@ class MovieForm(Form):
         return super().clean()
 
 
-class MovieCreateView(FormView):
+class MovieCreateView(LoginRequiredMixin, FormView):
     template_name = 'movie_create.html'
     form_class = MovieForm
     success_url = reverse_lazy('movie_create')
+    permission_required = 'viewer.add_movie'
+
 
     def form_valid(self, form):
         result = super().form_valid(form)
@@ -349,10 +361,11 @@ class PersonForm(Form):
         return super().clean()
 
 
-class PersonCreateView(FormView):
+class PersonCreateView(LoginRequiredMixin, FormView):
     template_name = 'person_create.html'
     form_class = PersonForm
     success_url = reverse_lazy('person_create')
+    permission_required = 'viewer.add_person'
 
     def form_valid(self, form):
         result = super().form_valid(form)
@@ -432,21 +445,23 @@ class PersonCreateView1(CreateView):
         return super().form_invalid(form)
 
 
-class PersonUpdateView(UpdateView):
+class PersonUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'person_create.html'
     model = Person
     form_class = PersonModelForm
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.change_person'
 
     def form_invalid(self, form):
         LOGGER.warning('User provided invalid data.')
         return super().form_invalid(form)
 
 
-class PersonDeleteView(DeleteView):
+class PersonDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'person_confirm_delete.html'
     model = Person
     success_url = reverse_lazy('administration')
+    permission_required = 'viewer.delete_person'
 
 
 def rate_movie(request):
@@ -471,4 +486,16 @@ def rate_movie(request):
 
 
 def add_comment(request):
-    pass
+    user = request.user
+    if request.method == 'POST':
+        movie_id = request.POST.get('movie_id')
+        movie_obj = Movie.objects.get(id=movie_id)
+        comment = request.POST.get('comment').strip()
+        if comment:
+            Comment.objects.create(
+                movie=movie_obj,
+                user=user,
+                comment=comment
+            )
+    return redirect(f"/movie/{movie_id}")
+
