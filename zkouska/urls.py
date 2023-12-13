@@ -23,13 +23,7 @@ from accounts.views import SignUpView
 from viewer.models import *
 from viewer.views import *
 
-admin.site.register(Genre)
-admin.site.register(Movie)
-admin.site.register(Country)
-admin.site.register(Comment)
-admin.site.register(Image)
-admin.site.register(Person)
-admin.site.register(Rating)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'viewer/styless.css' %}">
+    <title>{% block title %} {% endblock %}</title>
 </head>
 <body>
     <header class="headContainer">
@@ -21,15 +22,20 @@
             <a href="{% url 'signup' %}"><button>Register</button></a>
             <a href="{% url 'login' %}"><button>Login</button></a>
         {% endif %}
+        {% if request.user.is_superuser %}
+            <a href="/admin/"><button>Admin</button></a>
+        {% endif %}
     </nav>
     <nav class="navContainer2">
         <a href="{% url 'News' %}"><button>News in Cinemas</button></a>
         <a href="{% url 'NewsOnDVD' %}"><button>News on DVD</button></a>
         <a href="{% url 'movies' %}"><button>Movies</button></a>
         <a href="{% url 'actors' %}"><button>Actors</button></a>
-        <a href="{% url 'movie_create' %}"><button>Create Movie</button></a>
-        <a href="{% url 'person_create' %}"><button>Create Person</button></a>
         {% if request.user.is_authenticated %}
+            <a href="{% url 'movie_create' %}"><button>Create Movie</button></a>
+            {% if perms.viewer.add_person  %}
+                <a href="{% url 'person_create' %}"><button>Create Person</button></a>
+            {% endif %}
             <a href="{% url 'administration' %}"> <button>Administrace</button></a>
         {% endif %}
         <button>Movie Shop</button>
