@@ -270,7 +270,7 @@ class MovieForm(Form):
     genres = ModelMultipleChoiceField(queryset=Genre.objects)
     directors = ModelMultipleChoiceField(queryset=Person.objects)
     actors = ModelMultipleChoiceField(queryset=Person.objects)
-    year = IntegerField()
+    year = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 4)), label='Date of publication')
     image = ImageField(required=False)
     video = CharField(max_length=128, required=False)
     description = CharField(widget=Textarea, required=False)
