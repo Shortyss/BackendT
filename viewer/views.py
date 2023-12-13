@@ -162,6 +162,14 @@ def movies_by_country(request, pk):
 
 
 def movie(request, pk):
+    # if Movie.objects.filter(id=pk).count() == 0:
+    #     return reverse_lazy('index')
+
+    try:
+        movie_object = Movie.objects.get(id=pk)
+    except:
+        return render(request, 'movies.html')
+
     movie_object = Movie.objects.get(id=pk)
     avg_rating = None
     if Rating.objects.filter(movie=movie_object).count() > 0:

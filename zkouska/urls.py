@@ -18,7 +18,10 @@ from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
+from rest_framework.templatetags import rest_framework
 
+import api
+from api.views import *
 from accounts.views import SignUpView
 from viewer.models import *
 from viewer.views import *
@@ -74,4 +77,12 @@ urlpatterns = [
 
     path('rate_movie/', rate_movie, name='rate_movie'),
     path('add_comment/', add_comment, name='add_comment'),
+
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/movies/', api.views.Movies.as_view()),
+
+    path('api/movie/<pk>/', api.views.MovieDetail.as_view()),
+
+    path('api/person/<pk>/', api.views.PersonDetail.as_view()),
+    path('api/persons/', api.views.PersonsList.as_view()),
 ]

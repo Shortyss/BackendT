@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_dump_load_utf8',
+    'rest_framework',
 
     'viewer',
     'accounts',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'zkouska.middleware.AdminPagesMiddleware',
 ]
 
 ROOT_URLCONF = 'zkouska.urls'
