@@ -2,7 +2,7 @@ from datetime import date, datetime
 
 from django.db import models
 from django.db.models import Model, CharField, IntegerField, TextField, DateField, ForeignKey, DO_NOTHING, \
-    ManyToManyField, SET_NULL, DateTimeField
+    ManyToManyField, SET_NULL, DateTimeField, ImageField
 from django.contrib.auth.models import User
 
 
@@ -106,9 +106,12 @@ class Comment(Model):
 
 
 class Image(Model):
-    movie = ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False)
-    url = CharField(max_length=128, null=False, blank=False)
+    movie = models.ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False, default=None)
+    # url = CharField(max_length=128, null=False, blank=False)
+    image = ImageField(upload_to='images/', default=None, null=False, blank=False)  #, height_field=None, width_field=None, max_length=500)
     description = TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.movie}: {self.description}"
+        return f"{self.movie}: {self.description[:50]}"
+
+

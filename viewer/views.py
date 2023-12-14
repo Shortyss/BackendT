@@ -184,7 +184,10 @@ def movie(request, pk):
 
     comments = Comment.objects.filter(movie=movie_object).order_by('-created')
 
-    context = {'movie': movie_object, 'avg_rating': avg_rating, 'user_rating': user_rating, 'comments': comments}
+    # images = Image.objects.filter(movie=movie_object)
+
+    context = {'movie': movie_object, 'avg_rating': avg_rating,
+               'user_rating': user_rating, 'comments': comments}
     return render(request, 'movie.html', context)
 
 
@@ -279,7 +282,7 @@ class MovieForm(Form):
     directors = ModelMultipleChoiceField(queryset=Person.objects)
     actors = ModelMultipleChoiceField(queryset=Person.objects)
     year = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 4)), label='Date of publication')
-    image = ImageField(required=False)
+    # image = ImageField(required=False)
     video = CharField(max_length=128, required=False)
     description = CharField(widget=Textarea, required=False)
 
@@ -321,13 +324,13 @@ class MovieCreateView(LoginRequiredMixin, FormView):
         new_movie.directors.set(cleaned_data['directors'])
         new_movie.actors.set(cleaned_data['actors'])
 
-        if 'image' in self.request.FILES:
-            image_file = self.request.FILES['image']
-            # Vytvoření názvu souboru na základě slugifikovaného názvu filmu
-            image_name = slugify(new_movie.title_orig) + '.' + image_file.name.split('.')[-1]
-            new_movie.image.save(image_name, ContentFile(image_file.read()), save=True)
-
-        return result
+        # if 'image' in self.request.FILES:
+        #     image_file = self.request.FILES['image']
+        #     # Vytvoření názvu souboru na základě slugifikovaného názvu filmu
+        #     image_name = slugify(new_movie.title_orig) + '.' + image_file.name.split('.')[-1]
+        #     new_movie.image.save(image_name, ContentFile(image_file.read()), save=True)
+        #
+        # return result
 
     def form_invalid(self, form):
         LOGGER.warning('User provided invalid data.')
