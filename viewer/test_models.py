@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.db.models import Avg
 from django.test import TestCase
 
@@ -145,3 +146,24 @@ class RatingModelTest(TestCase):
         avg_rating = Rating.objects.filter(movie=movie).aggregate(Avg('rating'))
         self.assertEqual(avg_rating['rating__avg'], 85)
 
+
+class GenreModelTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        Genre.objects.create(name='Drama')
+
+    def test_genre_unique(self):
+        with self.assertRaises(IntegrityError):
+            Genre.objects.create(name='Drama')
+
+
+class CountryModelTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        Country.objects.create(name='Německo')
+
+    def test_country_unique(self):
+        with self.assertRaises(IntegrityError):
+            Country.objects.create(name='Německo')

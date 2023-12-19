@@ -116,7 +116,7 @@ class MoviesListView(ListView):
     model = Movie
 
 
-class MovieModelForm(ModelForm):
+class MovieModelForm(LoginRequiredMixin, ModelForm):
 
     class Meta:
         model = Movie
@@ -162,8 +162,8 @@ def movies_by_country(request, pk):
 
 
 def movie(request, pk):
-    # if Movie.objects.filter(id=pk).count() == 0:
-    #     return reverse_lazy('index')
+    if Movie.objects.filter(id=pk).count() == 0:
+        return reverse_lazy('index')
 
     try:
         movie_object = Movie.objects.get(id=pk)
@@ -184,10 +184,10 @@ def movie(request, pk):
 
     comments = Comment.objects.filter(movie=movie_object).order_by('-created')
 
-    # images = Image.objects.filter(movie=movie_object)
+    images = Image.objects.filter(movie=movie_object)
 
     context = {'movie': movie_object, 'avg_rating': avg_rating,
-               'user_rating': user_rating, 'comments': comments}
+               'user_rating': user_rating, 'comments': comments, 'images': images}
     return render(request, 'movie.html', context)
 
 
@@ -282,7 +282,7 @@ class MovieForm(Form):
     directors = ModelMultipleChoiceField(queryset=Person.objects)
     actors = ModelMultipleChoiceField(queryset=Person.objects)
     year = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 4)), label='Date of publication')
-    # image = ImageField(required=False)
+    image = ImageField(required=False)
     video = CharField(max_length=128, required=False)
     description = CharField(widget=Textarea, required=False)
 
@@ -297,8 +297,8 @@ class MovieForm(Form):
 
 class MovieCreateView(LoginRequiredMixin, FormView):
     template_name = 'movie_create.html'
-    form_class = MovieForm
-    success_url = reverse_lazy('movie_create')
+    form_class = MovieModelForm
+    success_url = reverse_lazy('movis')
     permission_required = 'viewer.add_movie'
 
 
@@ -324,13 +324,13 @@ class MovieCreateView(LoginRequiredMixin, FormView):
         new_movie.directors.set(cleaned_data['directors'])
         new_movie.actors.set(cleaned_data['actors'])
 
-        # if 'image' in self.request.FILES:
-        #     image_file = self.request.FILES['image']
-        #     # Vytvoření názvu souboru na základě slugifikovaného názvu filmu
-        #     image_name = slugify(new_movie.title_orig) + '.' + image_file.name.split('.')[-1]
-        #     new_movie.image.save(image_name, ContentFile(image_file.read()), save=True)
-        #
-        # return result
+        if 'image' in self.request.FILES:
+            image_file = self.request.FILES['image']
+            # Vytvoření názvu souboru na základě slugifikovaného názvu filmu
+            image_name = slugify(new_movie.title_orig) + '.' + image_file.name.split('.')[-1]
+            new_movie.image.save(image_name, ContentFile(image_file.read()), save=True)
+
+        return result
 
     def form_invalid(self, form):
         LOGGER.warning('User provided invalid data.')
@@ -353,6 +353,7 @@ def actor(request, pk):
 class PersonForm(Form):
     first_name = CharField(max_length=32)
     last_name = CharField(max_length=32)
+    person_image = models.ImageField(upload_to='person_images/', blank=True, null=True)
     nationality = CharField(max_length=64)
     birth_date = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 1)), label='Birth Date')
     date_of_death = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 1)), required=False, label='Date of Death')
@@ -384,6 +385,7 @@ class PersonCreateView(LoginRequiredMixin, FormView):
         Person.objects.create(
             first_name=cleaned_data['first_name'],
             last_name=cleaned_data['last_name'],
+            person_image=cleaned_data['person_image'],
             nationality=cleaned_data['nationality'],
             birth_date=cleaned_data['birth_date'],
             date_of_death=cleaned_data['date_of_death'],
@@ -448,7 +450,7 @@ class PersonModelForm(ModelForm):
 
 class PersonCreateView1(CreateView):
     template_name = 'person_create.html'
-    form_class = PersonModelForm
+    form_class = PersonForm
     success_url = reverse_lazy('person_create')
 
     def form_invalid(self, form):

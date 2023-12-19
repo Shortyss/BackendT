@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 
 
 class Country(Model):
-    name = CharField(max_length=64, null=False, blank=False)
+    name = CharField(max_length=64, null=False, blank=False, unique=True)
 
     class Meta:
         verbose_name_plural = "Countries"
@@ -20,7 +20,7 @@ class Country(Model):
 
 
 class Genre(Model):
-    name = CharField(max_length=32, null=False, blank=False)  # CharField => VARCHAR
+    name = CharField(max_length=32, null=False, blank=False, unique=True)  # CharField => VARCHAR
 
     def __str__(self):
         return f"{self.name}"
@@ -29,6 +29,7 @@ class Genre(Model):
 class Person(Model):
     first_name = CharField(max_length=32, null=False, blank=False)
     last_name = CharField(max_length=32, null=False, blank=False)
+    person_image = models.ImageField(upload_to='person_images/', blank=True, null=True)
     nationality = CharField(max_length=64, null=True, blank=True)
     birth_date = DateField(null=True, blank=True)
     date_of_death = DateField(null=True, blank=True)
