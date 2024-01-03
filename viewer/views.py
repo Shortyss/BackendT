@@ -2,7 +2,7 @@ from logging import getLogger
 import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.files.base import ContentFile
 from django.db.models import Avg
 from django.http import HttpResponse
@@ -11,10 +11,12 @@ from django.urls import reverse_lazy
 from django.utils.text import slugify
 from django.views import View
 from django.views.generic import TemplateView, ListView, FormView
+from django_addanother.views import CreatePopupMixin
+from django_addanother.widgets import AddAnotherWidgetWrapper
 
 from viewer.models import *
 from django.forms import Form, DateField, ModelChoiceField, Textarea, CharField, IntegerField, ModelMultipleChoiceField, \
-    ImageField, SelectDateWidget, ModelForm, DateInput
+    ImageField, SelectDateWidget, ModelForm, DateInput, SelectMultiple
 
 from django import forms
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
@@ -114,6 +116,7 @@ class MoviesTemplateView(TemplateView):
 class MoviesListView(ListView):
     template_name = 'movies2.html'
     model = Movie
+    paginate_by = 1
 
 
 class MovieModelForm(LoginRequiredMixin, ModelForm):
@@ -121,6 +124,39 @@ class MovieModelForm(LoginRequiredMixin, ModelForm):
     class Meta:
         model = Movie
         fields = '__all__'
+
+        widgets = {
+            'countries': AddAnotherWidgetWrapper(
+                SelectMultiple,
+                reverse_lazy('create_country')
+            ),
+            'genres': AddAnotherWidgetWrapper(
+                SelectMultiple,
+                reverse_lazy('genre_create')
+            ),
+            'directors': AddAnotherWidgetWrapper(
+                SelectMultiple,
+                reverse_lazy('person_create')
+            ),
+            'actors': AddAnotherWidgetWrapper(
+                SelectMultiple,
+                reverse_lazy('person_create')
+            )
+        }
+
+        labels = {
+            'title_orig': 'Originální název'
+        }
+
+        help_text = {
+            'title_orig': 'Zadejte originální název'
+        }
+
+        error_messages = {
+            'title_orig': {
+                'max_length': 'Název je příliš dlouhý'
+            }
+        }
 
     def clean_title_orig(self):
         initial_form = super().clean()
@@ -210,7 +246,7 @@ class GenresView(View):
         return render(request, 'genre_admin.html', context)
 
 
-class GenreCreateView(LoginRequiredMixin, CreateView):
+class GenreCreateView(LoginRequiredMixin, CreatePopupMixin, CreateView):
     template_name = 'genre_create.html'
     form_class = GenreModelForm
     success_url = reverse_lazy('administration')
@@ -244,8 +280,8 @@ class CountryModelForm(ModelForm):
         return name
 
 
-class CountryCreateView(LoginRequiredMixin, CreateView):
-    template_name = 'country_admin.html'
+class CountryCreateView(LoginRequiredMixin, CreatePopupMixin, CreateView):
+    template_name = 'country_create.html'
     form_class = CountryModelForm
     success_url = reverse_lazy('administration')
     permission_required = 'viewer.add_country'
@@ -282,7 +318,6 @@ class MovieForm(Form):
     directors = ModelMultipleChoiceField(queryset=Person.objects)
     actors = ModelMultipleChoiceField(queryset=Person.objects)
     year = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 4)), label='Date of publication')
-    image = ImageField(required=False)
     video = CharField(max_length=128, required=False)
     description = CharField(widget=Textarea, required=False)
 
@@ -346,14 +381,16 @@ def actors(request):
 
 def actor(request, pk):
     actor_object = Person.objects.get(id=pk)
-    context = {'actor': actor_object}
+
+    images = Image.objects.filter(actor=actor_object)
+
+    context = {'actor': actor_object, 'images': images}
     return render(request, 'actor.html', context)
 
 
 class PersonForm(Form):
     first_name = CharField(max_length=32)
     last_name = CharField(max_length=32)
-    person_image = models.ImageField(upload_to='person_images/', blank=True, null=True)
     nationality = CharField(max_length=64)
     birth_date = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 1)), label='Birth Date')
     date_of_death = DateField(widget=SelectDateWidget(years=range(1900, datetime.now().year + 1)), required=False, label='Date of Death')
@@ -373,31 +410,44 @@ class PersonForm(Form):
         return super().clean()
 
 
-class PersonCreateView(LoginRequiredMixin, FormView):
-    template_name = 'person_create.html'
-    form_class = PersonForm
-    success_url = reverse_lazy('person_create')
-    permission_required = 'viewer.add_person'
+class PersonModelForm(LoginRequiredMixin, ModelForm):
 
-    def form_valid(self, form):
-        result = super().form_valid(form)
-        cleaned_data = form.cleaned_data
-        Person.objects.create(
-            first_name=cleaned_data['first_name'],
-            last_name=cleaned_data['last_name'],
-            person_image=cleaned_data['person_image'],
-            nationality=cleaned_data['nationality'],
-            birth_date=cleaned_data['birth_date'],
-            date_of_death=cleaned_data['date_of_death'],
-            biography=cleaned_data['biography'],
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['birth_date'].widget = DateInput(
+            attrs={
+                'type': 'date',
+                'placeholder': 'dd-mm-yyyy',
+                'class': 'form-control'
+            }
         )
 
-        return result
+    class Meta:
+        model = Person
+        fields = '__all__'  # ve formuláři budou všechny atributy
+        # fields = ['last_name', 'first_name']  # ve formuláři se zobrazí pouze tyto atributy (v daném pořadí)
+        # exclude = ['biography']  # ve formuláři budou všechny atributy kromě těchto
+
+    def clean_first_name(self):
+        initial_data = super().clean()
+        initial = initial_data['first_name']
+        return initial.capitalize()
+
+    def clean_last_name(self):
+        initial_data = super().clean()
+        initial = initial_data['last_name']
+        return initial.capitalize()
+
+
+class PersonCreateView(PermissionRequiredMixin, CreatePopupMixin, CreateView):
+    template_name = 'person_create.html'
+    form_class = PersonModelForm
+    success_url = reverse_lazy('person_create')
+    permission_required = 'viewer.add_person'
 
     def form_invalid(self, form):
         LOGGER.warning('User provided invalid data.')
         return super().form_invalid(form)
-
 
 class PersonsListView(ListView):
     template_name = 'persons_admin.html'
@@ -419,33 +469,6 @@ def person(request, pk):
     return render(request, 'person.html', context)
 
 
-class PersonModelForm(ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
-        self.fields['birth_date'].widget = DateInput(
-            attrs={
-                'type': 'date',
-                'placeholder': 'dd-mm-yyyy',
-                'class': 'form-control'
-            }
-        )
-
-    class Meta:
-        model = Person
-        fields = '__all__'
-        # fields = ['last_name', 'first_name]
-        # exclude = ['biography']
-
-    def clean_first_name(self):
-        initial_form = super().clean()
-        initial = initial_form['first_name'].strip()   #  odstraní prázdné znaky na začátku a na konci
-        return initial.capitalize()
-
-    def clean_last_name(self):
-        initial_form = super().clean()
-        initial = initial_form['last_name'].strip()   #  odstraní prázdné znaky na začátku a na konci
-        return initial.capitalize()
 
 
 class PersonCreateView1(CreateView):

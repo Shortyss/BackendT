@@ -29,11 +29,11 @@ class Genre(Model):
 class Person(Model):
     first_name = CharField(max_length=32, null=False, blank=False)
     last_name = CharField(max_length=32, null=False, blank=False)
-    person_image = models.ImageField(upload_to='person_images/', blank=True, null=True)
     nationality = CharField(max_length=64, null=True, blank=True)
     birth_date = DateField(null=True, blank=True)
     date_of_death = DateField(null=True, blank=True)
     biography = TextField(null=True, blank=True)
+    person_image = ImageField(null=True, blank=True)
     created = DateTimeField(auto_now_add=True)
     updated = DateTimeField(auto_now=True)
 
@@ -47,6 +47,9 @@ class Person(Model):
             age_now = (today - self.birth_date).days // 365
             return age_now
 
+    def get_image(self):
+        return Image.objects.filter(person=self)
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
@@ -58,7 +61,6 @@ class Movie(Model):
     title_orig = CharField(max_length=64, null=False, blank=False)
     title_cz = CharField(max_length=64, null=True, blank=True)
     title_sk = CharField(max_length=64, null=True, blank=True)
-    movie_image = models.ImageField(upload_to='movie_images/', blank=True, null=True)
     countries = ManyToManyField(Country, blank=True, related_name='movies_in_country')  # umožňuje jít oběma směry tabulek
     genres = ManyToManyField(Genre, blank=True, related_name='movies_of_genre')
     directors = ManyToManyField(Person, blank=False, related_name='directing_movie')
@@ -66,6 +68,7 @@ class Movie(Model):
     year = IntegerField(null=True, blank=True)
     video = CharField(max_length=128, null=True, blank=True)
     description = TextField(null=True, blank=True)
+    movie_image = ImageField(null=True, blank=True)
     created = DateTimeField(auto_now_add=True)
     updated = DateTimeField(auto_now=True)
 
@@ -81,6 +84,9 @@ class Movie(Model):
             title_name += f" ({self.year})"
 
         return title_name
+
+    def get_image(self):
+        return Image.objects.filter(movie=self)
 
     class Meta:
         ordering = ['title_orig']
@@ -107,7 +113,8 @@ class Comment(Model):
 
 
 class Image(Model):
-    movie = models.ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False, default=None)
+    movie = ForeignKey(Movie, on_delete=DO_NOTHING, null=False, blank=False, default=None)
+    person_image = ForeignKey(Person, on_delete=DO_NOTHING, null=False, blank=False, default=None)
     # url = CharField(max_length=128, null=False, blank=False)
     image = ImageField(upload_to='images/', default=None, null=False, blank=False)  #, height_field=None, width_field=None, max_length=500)
     description = TextField(null=True, blank=True)

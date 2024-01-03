@@ -1,10 +1,89 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Seznam filmů</h1>
-<ul>
-    {% for movie in object_list %}
-        <li><a href="{% url 'movie' movie.id %}">{{ movie }}</a></li>
-    {% endfor %}
-</ul>
+    <h1>Seznam filmů</h1>
+    <ul>
+        {% for movie in object_list %}
+            <li><a href="{% url 'movie' movie.id %}">{{ movie }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <!-- pagination v1: Stránka 1 z 3 Následující -->
+    <div>
+        <span>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">Předchozí</a>
+            {% endif %}
+            <span>
+                Stránka {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}
+            </span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Následující</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <!-- pagination v2: Předchozí 1 2 3 Následující -->
+    <div>
+        <span>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">Předchozí</a>
+            {% endif %}
+            <span>
+                {% for i in page_obj.paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <span class="current-page">
+                            <a href="?page={{ i }}">{{ i }}</a>
+                        </span>
+                    {% else %}
+                        <a href="?page={{ i }}">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+            </span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Následující</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <!-- pagination v3:  Předchozí 1 ... 3 4 5 6 7 ... 11 Následující  -->
+    <div>
+        <span>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">Předchozí</a>
+            {% endif %}
+            <span>
+                {% if page_obj.number > 3 %}
+                    <a href="?page=1">1</a>
+                    {% if page_obj.number > 4 %}
+                        <span>...</span>
+                    {% endif %}
+                {% endif %}
+
+                {% for i in page_obj.paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <span class="current-page">
+                            <a href="?page={{ i }}">{{ i }}</a>
+                        </span>
+                    {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                        <a href="?page={{ i }}">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.number < page_obj.paginator.num_pages|add:'-3' %}
+                    {% if page_obj.number < page_obj.paginator.num_pages|add:'-4' %}
+                        <span>...</span>
+                    {% endif %}
+                    <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+                {% endif %}
+            </span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Následující</a>
+            {% endif %}
+        </span>
+    </div>
+
+    {% if perms.viewer.add_movie %}
+        <a href="{% url 'movie_create' %}"><button>Přidat film</button></a>
+    {% endif %}
 {% endblock %}

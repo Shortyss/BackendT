@@ -1,0 +1,50 @@
+pip install django_addanother
+
+Přidat do aplikací v settings: 'django_addanother',
+
+Ve Views musíme přidat do formuláře přidat wiget: AddAnotherWidgetWrapper
+
+příklad:
+
+class MovieModelForm(LoginRequiredMixin, ModelForm):
+
+    class Meta:
+        model = Movie
+        fields = '__all__'
+
+        widgets = {
+            'countries': AddAnotherWidgetWrapper(
+                SelectMultiple,
+                reverse_lazy('create_country')
+            )
+        }
+
+Do movie_create.html přidáme:
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <table>
+        {{ form }}
+        <script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+        {{ form.media }}
+    </table>
+    <input type="submit" value="Submit" class="btn btn-submit">
+</form>
+{% endblock %}
+
+DO CountryCreateView přidám mixin:
+class CountryCreateView(LoginRequiredMixin, CreatePopupMixin, CreateView):
+    template_name = 'country_create.html'
+    form_class = CountryModelForm
+    success_url = reverse_lazy('administration')
+    permission_required = 'viewer.add_country'
+
+Do base.html přidáme co nechceme zobrazovat, tak do if:
+Do šablony base.html přidáme:
+{% if not view.is_popup %}
+... hlavička a navigace
+{% endif %}

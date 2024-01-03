@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import views as auth_views
@@ -22,11 +23,10 @@ from rest_framework.templatetags import rest_framework
 
 import api
 from api.views import *
-from accounts.views import SignUpView
+from accounts.views import *
 from viewer.models import *
 from viewer.views import *
-
-
+from zkouska import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -41,11 +41,14 @@ urlpatterns = [
     path('accounts/signup/', SignUpView.as_view(), name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),     # defaultní views pro přihlašování/odhlašován/...
 
+    path('accounts/profile_create/<pk>', ProfileCreateView.as_view(), name='profile_create'),
+    path('accounts/profile/<pk>/', profile, name='profile'),
+    path('accounts/profile_edit/', profile_edit, name='profile_edit'),
 
 
     path('News/', news, name='News'),
     path('NewsOnDVD', newsOnDVD, name='NewsOnDVD'),
-    path('movies/', movies, name='movies'),
+    path('movies/', MoviesListView.as_view(), name='movies2'),
     path('movie/create/', MovieCreateView.as_view(), name='movie_create'),
     path('administration/', administration, name='administration'),
     path('country_admin/', CountryView.as_view(), name='country_admin'),
@@ -85,4 +88,4 @@ urlpatterns = [
 
     path('api/person/<pk>/', api.views.PersonDetail.as_view()),
     path('api/persons/', api.views.PersonsList.as_view()),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
